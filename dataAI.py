@@ -10,7 +10,6 @@ collection = db["sensor_data"]        # Nama koleksi
 
 gemini_collection = db["gemini_responses"]  # Koleksi jawaban Gemini
 
-
 st.set_page_config(page_title="Heart Rate & Temperature Monitor", layout="wide")
 
 st.title("📊 Real-Time Heart Rate & Temperature Dashboard")
@@ -25,9 +24,15 @@ else:
     df["timestamp"] = pd.to_datetime(df["timestamp"])
     df = df.sort_values(by="timestamp", ascending=True)
 
-    # Tampilkan dalam tabel
+    # Jika ada kolom 'siswa', ubah nilainya
+    if "siswa" in df.columns:
+        df["nama_siswa"] = df["siswa"].apply(lambda x: "Andi" if x == 1 else "")
+    else:
+        df["nama_siswa"] = ""
+
+    # Tampilkan dalam tabel, termasuk nama_siswa
     st.subheader("📋 Data Terbaru")
-    st.dataframe(df[["timestamp", "heart_rate", "temperature"]].tail(10), use_container_width=True)
+    st.dataframe(df[["timestamp", "heart_rate", "temperature", "nama_siswa"]].tail(10), use_container_width=True)
 
     # Chart Heart Rate
     st.subheader("❤️ Heart Rate (BPM)")
@@ -55,6 +60,3 @@ else:
         st.dataframe(gemini_df[["timestamp", "question", "answer"]], use_container_width=True)
     else:
         st.warning("Data Gemini tidak memiliki format yang sesuai.")
-    
-
-
